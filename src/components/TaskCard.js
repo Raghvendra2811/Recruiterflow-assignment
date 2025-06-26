@@ -1,16 +1,48 @@
+import { useState } from "react";
 import "../styles/TaskCard.css";
 
-const TaskCard = ({ task }) => {
+const TaskCard = ({ task, onDelete }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const formatDate = (timestamp) => {
     const date = new Date(timestamp * 1000);
     return date.toLocaleString();
   };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    onDelete(task.id);
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority.toLowerCase()) {
+      case "high":
+        return { backgroundColor: "rgba(231, 76, 60, 0.25)", color: "#ff7675" };
+      case "medium":
+        return {
+          backgroundColor: "rgba(241, 196, 15, 0.25)",
+          color: "#ffeaa7",
+        };
+      case "low":
+        return {
+          backgroundColor: "rgba(46, 204, 113, 0.25)",
+          color: "#55efc4",
+        };
+      default:
+        return {
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          color: "#ffffff",
+        };
+    }
+  };
+
   return (
-    <div className={`task-card  deleting" : ""}`}>
+    <div className={`task-card ${isDeleting ? "deleting" : ""}`}>
       <div className="task-header">
         <h3>{task.title}</h3>
         <span
           className="priority"
+          style={getPriorityColor(task.priority)}
           data-priority={task.priority}
         >
           {task.priority}
@@ -21,6 +53,7 @@ const TaskCard = ({ task }) => {
         <span className="task-date">{formatDate(task.created_at)}</span>
         <button
           className="delete-btn"
+          onClick={handleDelete}
           aria-label="Delete task"
         >
           <svg
